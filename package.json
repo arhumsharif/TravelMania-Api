@@ -1,7 +1,7 @@
 {
-  "name": "the-acadmics-api",
+  "name": "the-travelmania-api",
   "version": "1.0.0",
-  "description": "Rest API using mysql",
+  "description": "Rest API using mysql for FYP",
   "main": "app.js",
   "scripts": {
     "start": "node ./app.js",

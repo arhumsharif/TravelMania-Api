@@ -1,6 +1,5 @@
 const mysql = require("mysql");
 const env = require("./env-config.json");
-const env_server = require("./env-config-server.json");
 //create connection
 // port: env.dbhost.port,
 // local is false

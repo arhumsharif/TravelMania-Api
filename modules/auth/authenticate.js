@@ -19,10 +19,6 @@ function getSecretKey() {
 }
 // authenticate
 router.post("/",async (req, res) => {
-  let role = 0
-  let adminEmail = "admin@gmail.com"
-  let adminPass = md5('123456')
-  // for checking if it ia a admin
   let password = req.body.Password;
   password = password;
   let sql = `SELECT * FROM users where email = ${db.connection.escape(
@@ -66,26 +62,6 @@ router.post("/",async (req, res) => {
             expiresIn: "1h",
           }
         );
-
-        if (result[0].role == 'admin')
-        {
-          return res.status(200).json({
-            message: "Auth Successfull",
-            token: token + " " + result[0].user_guid,
-            role: 1
-          });    
-        }
-
-        // Checking if user is verified using AWS
-        // if (results[0].is_verified == 0)
-        // {
-        //   return res.status(200).json({
-        //     message: "Auth Successfull",
-        //     verification: 'aws_failed',
-        //     token: token + " " + results[0].user_guid,
-        //   })
-        // }
-
 
         res.status(200).json({
           message: "Auth Successfull",

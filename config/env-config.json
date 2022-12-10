@@ -3,7 +3,7 @@
     "host": "localhost",
     "port": "5000",
     "user": "root",
-    "password": "your_current_password",
-    "database": "propertyvaluation"
+    "password": "",
+    "database": "travelmania"
   }
 }
