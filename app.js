@@ -45,8 +45,8 @@ app.use("/post", postRoute);
 const pullRoute = require("./modules/Put");
 app.use("/put", pullRoute);
 
-const fileRoute = require("./modules/Files/upload");
-app.use("/uploadFile", fileRoute);
+// const fileRoute = require("./modules/Files/upload");
+// app.use("/uploadFile", fileRoute);
 //Delete routes
 const deleteRoute = require("./modules/Delete");
 app.use("/delete", deleteRoute);
