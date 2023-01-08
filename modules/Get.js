@@ -32,5 +32,43 @@ router.get('/tourguide/portfolio/view', checkAuth, (req, res) => {
       })
 })
 
+// Tour Organization
+
+router.get('/tourorg/portfolio/view', checkAuth, (req, res) => {
+  let userGuid = db.escape(req.userData.user_guid);
+  let sql1 = `SELECT * FROM tour_organization WHERE user_guid = ${userGuid}`;
+      let query1 = db.query(sql1, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            message: "Some Error Occured in Checking",
+          });
+        }
+        return res.status(200).json({
+          message: "Success",
+          data: result
+        })
+      })
+})
+
+
+// traveler
+
+router.get('/traveler/portfolio/view', checkAuth, (req, res) => {
+  let userGuid = db.escape(req.userData.user_guid);
+  let sql1 = `SELECT * FROM traveler WHERE user_guid = ${userGuid}`;
+      let query1 = db.query(sql1, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            message: "Some Error Occured in Checking",
+          });
+        }
+        return res.status(200).json({
+          message: "Success",
+          data: result
+        })
+      })
+})
 
 module.exports = router;

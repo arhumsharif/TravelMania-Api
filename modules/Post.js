@@ -127,4 +127,142 @@ router.post("/user/add", (req, res) => {
     );
   })
 
+
+  // tour organization
+
+  router.post('/tourorg/portfolio/add', checkAuth, (req, res) => {
+
+    let tourorgGuid = db.escape(uuidv4());
+    let userGuid = db.escape(req.userData.user_guid);
+    let name = db.escape(req.body.Name)
+    let country = db.escape(req.body.Country)
+    let contact = db.escape(req.body.Contact)
+    let phone = db.escape(req.body.Phone)
+    let about = db.escape(req.body.About)
+
+    console.log(country)
+
+    let promiseOne = new Promise((resolve, reject) => {
+      let sql1 = `SELECT * FROM tour_organization WHERE user_guid = ${userGuid}`;
+      let query1 = db.query(sql1, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            message: "Some Error Occured in Checking",
+          });
+        }
+        if (result.length > 0) {
+          reject("Update");
+        }
+        resolve("Insert");
+      });
+    });
+    promiseOne.then(
+      (data) => {
+        // Gonna Insert
+        let sql2 = `INSERT INTO tour_organization (tour_org_guid, user_guid, org_name, country, primary_contact, phone_no, about) VALUES (${tourorgGuid}, ${userGuid}, ${name}, ${country}, ${contact}, ${phone}, ${about})`;
+        let query2 = db.query(sql2, (err1, result1) => {
+          if (err1) {
+            console.log(err1)
+            return res.status(500).json({
+              message: "Some Error Occured in Inserting Data",
+            });
+          }
+    
+          return res.status(200).json({
+            message: "Inserted",
+          });
+        });
+      },
+      (data) => {
+        // Gonna Update
+        let sql2 = `UPDATE tour_organization SET org_name = ${name}, country = ${country}, primary_contact = ${contact}, phone_no = ${phone}, about = ${about} WHERE user_guid = ${userGuid}`;
+        let query2 = db.query(sql2, (err1, result1) => {
+          if (err1) {
+            console.log(err1)
+            return res.status(500).json({
+              message: "Some Error Occured in Updating Data",
+            });
+          }
+
+        return res.status(200).json({
+          message: 'Updated',
+        });
+      })
+      }
+    );
+  })
+
+
+  // Traveler
+  // tour organization
+
+  router.post('/traveler/portfolio/add', checkAuth, (req, res) => {
+
+    let travelerGuid = db.escape(uuidv4());
+    let userGuid = db.escape(req.userData.user_guid);
+    let name = db.escape(req.body.Name)
+    let phone = db.escape(req.body.Phone)
+    let cnic = db.escape(req.body.Cnic)
+    let language = db.escape(req.body.Language)
+    let dob = db.escape(req.body.Dob)
+    let gender = db.escape(req.body.Gender)
+    let city = db.escape(req.body.City)
+    let country = db.escape(req.body.Country)
+    let about = db.escape(req.body.About)
+
+    console.log(dob)
+
+
+    let promiseOne = new Promise((resolve, reject) => {
+      let sql1 = `SELECT * FROM traveler WHERE user_guid = ${userGuid}`;
+      let query1 = db.query(sql1, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            message: "Some Error Occured in Checking",
+          });
+        }
+        if (result.length > 0) {
+          reject("Update");
+        }
+        resolve("Insert");
+      });
+    });
+    promiseOne.then(
+      (data) => {
+        // Gonna Insert
+        let sql2 = `INSERT INTO traveler (traveler_guid, user_guid, name, phone, cnic, language, dob, gender, city, country, about) VALUES (${travelerGuid}, ${userGuid}, ${name}, ${phone}, ${cnic}, ${language}, ${dob}, ${gender}, ${city}, ${country}, ${about})`;
+        let query2 = db.query(sql2, (err1, result1) => {
+          if (err1) {
+            console.log(err1)
+            return res.status(500).json({
+              message: "Some Error Occured in Inserting Data",
+            });
+          }
+    
+          return res.status(200).json({
+            message: "Inserted",
+          });
+        });
+      },
+      (data) => {
+        // Gonna Update
+        let sql2 = `UPDATE traveler SET name = ${name}, phone = ${phone}, cnic = ${cnic}, language = ${language}, dob = ${dob}, gender = ${gender}, city = ${city}, country = ${country}, about = ${about} WHERE user_guid = ${userGuid}`;
+        let query2 = db.query(sql2, (err1, result1) => {
+          if (err1) {
+            console.log(err1)
+            return res.status(500).json({
+              message: "Some Error Occured in Updating Data",
+            });
+          }
+
+        return res.status(200).json({
+          message: 'Updated',
+        });
+      })
+      }
+    );
+  })
+
 module.exports = router;
