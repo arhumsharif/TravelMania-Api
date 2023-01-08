@@ -71,4 +71,23 @@ router.get('/traveler/portfolio/view', checkAuth, (req, res) => {
       })
 })
 
+// Package View
+
+router.get('/package/view', checkAuth, (req, res) => {
+  let userGuid = db.escape(req.userData.user_guid);
+  let sql1 = `SELECT * FROM package WHERE user_guid = ${userGuid}`;
+      let query1 = db.query(sql1, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            message: "Some Error Occured in Checking",
+          });
+        }
+        return res.status(200).json({
+          message: "Success",
+          data: result
+        })
+      })
+})
+
 module.exports = router;

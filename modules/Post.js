@@ -265,4 +265,30 @@ router.post("/user/add", (req, res) => {
     );
   })
 
+
+  // Package Insert
+  router.post('/package/add', checkAuth, (req, res) => {
+
+    let packageGuid = db.escape(uuidv4());
+    let userGuid = db.escape(req.userData.user_guid);
+    let title = db.escape(req.body.Title)
+    let desc = db.escape(req.body.Desc)
+    let place = db.escape(req.body.Place)
+    let hotel = db.escape(req.body.Hotel)
+    let price = db.escape(req.body.Price)
+    let capacity = db.escape(req.body.Capacity)
+
+      let sql1 = `INSERT INTO package (package_guid, user_guid, title, description, place, hotel, price, capacity) VALUES (${packageGuid}, ${userGuid}, ${title}, ${desc}, ${place}, ${hotel}, ${price}, ${capacity})`;
+      let query1 = db.query(sql1, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            message: "Some Error Occured in Checking",
+          });
+        }
+        return res.status(200).json({
+          message: "Success"
+        })
+      })
+  })
 module.exports = router;
