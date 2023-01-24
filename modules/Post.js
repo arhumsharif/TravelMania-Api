@@ -25,11 +25,11 @@ router.post('/user/add', (req, res) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
-          message: 'Some Error Occured in Checking Email',
+          message: 'Server Error',
         });
       }
       if (result.length > 0) {
-        reject('Invalid Email');
+        reject('Invalid Credentials');
       }
       resolve(result);
     });
@@ -42,7 +42,7 @@ router.post('/user/add', (req, res) => {
         if (err1) {
           console.log(err1);
           return res.status(500).json({
-            message: 'Some Error Occured in Inserting Data',
+            message: 'Server Error',
           });
         }
 
