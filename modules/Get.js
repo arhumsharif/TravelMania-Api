@@ -32,6 +32,23 @@ router.get('/tourguide/portfolio/view', checkAuth, (req, res) => {
   });
 });
 
+router.get('/tourguide/portfolio/view/:user_id', (req, res) => {
+  let userGuid = db.escape(req.params.user_id);
+  let sql1 = `SELECT * FROM tour_guide WHERE tour_guide_guid = ${userGuid}`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
+
 // Tour Organization
 
 router.get('/tourorg/portfolio/view', checkAuth, (req, res) => {
