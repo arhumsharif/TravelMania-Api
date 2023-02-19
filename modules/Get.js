@@ -49,6 +49,23 @@ router.get('/tourguide/portfolio/view/:user_id', (req, res) => {
   });
 });
 
+router.get('/tourorg/portfolio/view/:user_id', (req, res) => {
+  let userGuid = db.escape(req.params.user_id);
+  let sql1 = `SELECT * FROM tour_organization WHERE user_guid = ${userGuid}`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
+
 router.get('/package/specific/view/:package_id', (req, res) => {
   let packageGuid = db.escape(req.params.package_id);
   let sql1 = `SELECT * FROM package WHERE package_guid = ${packageGuid}`;
@@ -141,6 +158,22 @@ router.get('/package/view/all', (req, res) => {
 
 router.get('/tourguide/view/all', (req, res) => {
   let sql1 = `SELECT * FROM tour_guide`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
+
+router.get('/tourorg/view/all', (req, res) => {
+  let sql1 = `SELECT * FROM tour_organization`;
   let query1 = db.query(sql1, (err, result) => {
     if (err) {
       console.log(err);
