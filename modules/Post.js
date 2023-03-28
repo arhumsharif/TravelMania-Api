@@ -17,25 +17,24 @@ function generateOTP() {
 
   // If the number is less than 1000, add leading zeros
   if (otp < 1000) {
-    return ("0" + otp).slice(-4);
+    return ('0' + otp).slice(-4);
   } else {
     return otp.toString();
   }
 }
 
-
 // Send Confirmation of Registration
 const sendConfirmation = (receiver, subject, text) => {
   var transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: 'gmail',
     auth: {
-      user: "arhumsharif06@gmail.com",
-      pass: "otslwknoqspbdsue",
+      user: 'arhumsharif06@gmail.com',
+      pass: 'otslwknoqspbdsue',
     },
   });
 
   var mailOptions = {
-    from: "arhumsharif06@gmail.com",
+    from: 'arhumsharif06@gmail.com',
     to: receiver,
     subject: subject,
     text: text,
@@ -45,14 +44,14 @@ const sendConfirmation = (receiver, subject, text) => {
     if (error) {
       console.log(error);
     } else {
-      console.log("Email sent: " + info.response);
+      console.log('Email sent: ' + info.response);
     }
   });
 };
 
 router.post('/user/add', (req, res) => {
   let userGuid = db.escape(uuidv4());
-  let email_send = req.body.Email
+  let email_send = req.body.Email;
   let email = db.escape(req.body.Email);
   let password = db.escape(md5(req.body.Password));
   let userType = db.escape(req.body.UserType);
@@ -77,7 +76,7 @@ router.post('/user/add', (req, res) => {
   promiseOne.then(
     (data) => {
       // No Email Found With this Email
-      let otpcode = generateOTP()
+      let otpcode = generateOTP();
 
       let sql2 = `INSERT INTO users (user_guid, email, password, user_type, secret_key, otp_code) VALUES(${userGuid},${email},${password},${userType},'', ${otpcode})`;
       let query2 = db.query(sql2, (err1, result1) => {
@@ -88,7 +87,11 @@ router.post('/user/add', (req, res) => {
           });
         }
 
-        sendConfirmation(email_send, "Confirmation From Travelmania", "Your Otp Code is: " + otpcode)
+        sendConfirmation(
+          email_send,
+          'Confirmation From Travelmania',
+          'Your Otp Code is: ' + otpcode
+        );
 
         return res.status(200).json({
           message: 'Success',
@@ -104,7 +107,117 @@ router.post('/user/add', (req, res) => {
   );
 });
 
-router.post('/user/verify' , (req, res) => {
+router.post('/requser/add', (req, res) => {
+  let userGuid = db.escape(uuidv4());
+  let email = db.escape(req.body.Email);
+  let password = db.escape(md5(req.body.Password));
+  let name = db.escape(req.body.name);
+  let cnic = db.escape(req.body.cnic);
+  let mobile = db.escape(req.body.mobile);
+  let dob = db.escape(req.body.dob);
+  let address = db.escape(req.body.address);
+
+  // Got the attributes from front end
+  // Check if a user exists with same email
+  let promiseOne = new Promise((resolve, reject) => {
+    let sql1 = `SELECT * FROM users WHERE email = ${email}`;
+    let query1 = db.query(sql1, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          message: 'Server Error',
+        });
+      }
+      if (result.length > 0) {
+        reject('Invalid Credentials');
+      }
+      resolve(result);
+    });
+  });
+  promiseOne.then(
+    (data) => {
+      // No Email Found With this Email
+      let sql2 = `INSERT INTO req_tour_guide (req_guid, name, cnic, mobile, dob, address, email, password, confirmed) VALUES(${userGuid},${name},${cnic},${mobile},${dob}, ${address}, ${email}, ${password}, 0)`;
+      let query2 = db.query(sql2, (err1, result1) => {
+        if (err1) {
+          console.log(err1);
+          return res.status(500).json({
+            message: 'Server Error',
+          });
+        }
+
+        return res.status(200).json({
+          message: 'Success',
+        });
+      });
+    },
+    (error) => {
+      // Email Found with given Email
+      return res.status(500).json({
+        message: error,
+      });
+    }
+  );
+});
+
+router.post('/requserorg/add', (req, res) => {
+  let userGuid = db.escape(uuidv4());
+  let email = db.escape(req.body.Email);
+  let password = db.escape(md5(req.body.Password));
+  let o_name = db.escape(req.body.o_name);
+  let o_reg_no = db.escape(req.body.o_reg_no);
+  let o_phone = db.escape(req.body.o_phone);
+  let o_web = db.escape(req.body.o_web);
+  let o_address = db.escape(req.body.o_address);
+  let name = db.escape(req.body.name);
+  let cnic = db.escape(req.body.cnic);
+  let mobile = db.escape(req.body.mobile);
+  let dob = db.escape(req.body.dob);
+
+  // Got the attributes from front end
+  // Check if a user exists with same email
+  let promiseOne = new Promise((resolve, reject) => {
+    let sql1 = `SELECT * FROM users WHERE email = ${email}`;
+    let query1 = db.query(sql1, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          message: 'Server Error',
+        });
+      }
+      if (result.length > 0) {
+        reject('Invalid Credentials');
+      }
+      resolve(result);
+    });
+  });
+  promiseOne.then(
+    (data) => {
+      // No Email Found With this Email
+      let sql2 = `INSERT INTO req_tour_org (req_guid, email, o_name, o_reg_no, o_phone, o_web, o_address, name, cnic, mobile, dob, password, confirmed) VALUES(${userGuid}, ${email}, ${o_name}, ${o_reg_no}, ${o_phone}, ${o_web}, ${o_address}, ${name}, ${cnic}, ${mobile}, ${dob}, ${password}, 0)`;
+      let query2 = db.query(sql2, (err1, result1) => {
+        if (err1) {
+          console.log(err1);
+          return res.status(500).json({
+            message: 'Server Error',
+          });
+        }
+
+        return res.status(200).json({
+          message: 'Success',
+        });
+      });
+    },
+    (error) => {
+      // Email Found with given Email
+      return res.status(500).json({
+        message: error,
+      });
+    }
+  );
+});
+
+router.post('/user/verify', (req, res) => {
   let email = db.escape(req.body.Email);
   let otpCode = db.escape(req.body.OtpCode);
 
@@ -117,8 +230,7 @@ router.post('/user/verify' , (req, res) => {
       });
     }
 
-    if (result.length <= 0)
-    {
+    if (result.length <= 0) {
       return res.status(400).json({
         message: 'Failed',
       });
@@ -353,9 +465,9 @@ router.post('/package/add', checkAuth, (req, res) => {
   });
 });
 
-// add  portal 
+// add  portal
 
-router.post('/helpportal/add' , (req, res) => {
+router.post('/helpportal/add', (req, res) => {
   let helpPortalGuid = db.escape(uuidv4());
   let name = db.escape(req.body.Name);
   let email = db.escape(req.body.Email);
@@ -378,12 +490,12 @@ router.post('/helpportal/add' , (req, res) => {
 
 // add feedback
 
-router.post('/feedback/add',checkAuth , (req, res) => {
+router.post('/feedback/add', checkAuth, (req, res) => {
   let feedbackGuid = db.escape(uuidv4());
   let userGuid = db.escape(req.userData.user_guid);
   let tourGuideGuid = db.escape(req.body.TourGuideGuid);
   let desc = db.escape(req.body.Desc);
-  let rating = db.escape(req.body.Rating)
+  let rating = db.escape(req.body.Rating);
 
   let sql1 = `INSERT INTO feedback (feedback_guid, user_guid, tour_guide_guid, description, rating) VALUES (${feedbackGuid}, ${userGuid}, ${tourGuideGuid}, ${desc}, ${rating})`;
   let query1 = db.query(sql1, (err, result) => {
