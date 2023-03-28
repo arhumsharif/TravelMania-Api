@@ -188,4 +188,43 @@ router.get('/tourorg/view/all', (req, res) => {
   });
 });
 
+// view help portal
+
+router.get('/helpportal/view/all', (req, res) => {
+  let sql1 = `SELECT * from help_portal;`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
+
+// get feedback
+
+router.get('/feedback/view/:tourguideid', (req, res) => {
+  let tourGuideGuid = db.escape(req.params.tourguideid);
+
+  let sql1 = `SELECT f.* , u.email from feedback f INNER JOIN users u ON f.user_guid = u.user_guid WHERE f.tour_guide_guid = ${tourGuideGuid};`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
+
+
 module.exports = router;

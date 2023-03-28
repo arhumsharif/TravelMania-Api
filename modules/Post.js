@@ -282,4 +282,51 @@ router.post('/package/add', checkAuth, (req, res) => {
     });
   });
 });
+
+// add  portal 
+
+router.post('/helpportal/add' , (req, res) => {
+  let helpPortalGuid = db.escape(uuidv4());
+  let name = db.escape(req.body.Name);
+  let email = db.escape(req.body.Email);
+  let title = db.escape(req.body.Title);
+  let desc = db.escape(req.body.Desc);
+
+  let sql1 = `INSERT INTO help_portal (help_portal_guid, name, email, title, description) VALUES (${helpPortalGuid}, ${name}, ${email}, ${title}, ${desc})`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+    });
+  });
+});
+
+// add feedback
+
+router.post('/feedback/add',checkAuth , (req, res) => {
+  let feedbackGuid = db.escape(uuidv4());
+  let userGuid = db.escape(req.userData.user_guid);
+  let tourGuideGuid = db.escape(req.body.TourGuideGuid);
+  let desc = db.escape(req.body.Desc);
+  let rating = db.escape(req.body.Rating)
+
+  let sql1 = `INSERT INTO feedback (feedback_guid, user_guid, tour_guide_guid, description, rating) VALUES (${feedbackGuid}, ${userGuid}, ${tourGuideGuid}, ${desc}, ${rating})`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+    });
+  });
+});
+
 module.exports = router;
