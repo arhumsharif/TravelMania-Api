@@ -11,8 +11,48 @@ const os = require('os');
 const checkAuth = require('../middleware/check-auth');
 const ampq = require('amqplib/callback_api');
 
+function generateOTP() {
+  // Generate a random 4-digit number
+  const otp = Math.floor(Math.random() * 10000);
+
+  // If the number is less than 1000, add leading zeros
+  if (otp < 1000) {
+    return ("0" + otp).slice(-4);
+  } else {
+    return otp.toString();
+  }
+}
+
+
+// Send Confirmation of Registration
+const sendConfirmation = (receiver, subject, text) => {
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "arhumsharif06@gmail.com",
+      pass: "otslwknoqspbdsue",
+    },
+  });
+
+  var mailOptions = {
+    from: "arhumsharif06@gmail.com",
+    to: receiver,
+    subject: subject,
+    text: text,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+};
+
 router.post('/user/add', (req, res) => {
   let userGuid = db.escape(uuidv4());
+  let email_send = req.body.Email
   let email = db.escape(req.body.Email);
   let password = db.escape(md5(req.body.Password));
   let userType = db.escape(req.body.UserType);
@@ -37,7 +77,9 @@ router.post('/user/add', (req, res) => {
   promiseOne.then(
     (data) => {
       // No Email Found With this Email
-      let sql2 = `INSERT INTO users (user_guid, email, password, user_type, secret_key) VALUES(${userGuid},${email},${password},${userType},'')`;
+      let otpcode = generateOTP()
+
+      let sql2 = `INSERT INTO users (user_guid, email, password, user_type, secret_key, otp_code) VALUES(${userGuid},${email},${password},${userType},'', ${otpcode})`;
       let query2 = db.query(sql2, (err1, result1) => {
         if (err1) {
           console.log(err1);
@@ -45,6 +87,8 @@ router.post('/user/add', (req, res) => {
             message: 'Server Error',
           });
         }
+
+        sendConfirmation(email_send, "Confirmation From Travelmania", "Your Otp Code is: " + otpcode)
 
         return res.status(200).json({
           message: 'Success',
@@ -58,6 +102,32 @@ router.post('/user/add', (req, res) => {
       });
     }
   );
+});
+
+router.post('/user/verify' , (req, res) => {
+  let email = db.escape(req.body.Email);
+  let otpCode = db.escape(req.body.OtpCode);
+
+  let sql1 = `SELECT * FROM users WHERE email = ${email} and otp_code = ${otpCode}; `;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+
+    if (result.length <= 0)
+    {
+      return res.status(400).json({
+        message: 'Failed',
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Success',
+    });
+  });
 });
 
 // add a portfolio of tour guide
