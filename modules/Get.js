@@ -205,6 +205,25 @@ router.get('/helpportal/view/all', (req, res) => {
     });
   });
 });
+// chat view
+
+router.get('/chat/view/:receiverid', checkAuth, (req, res) => {
+  let senderGuid = db.escape(req.userData.user_guid);
+  let receiverGuid = db.escape(req.params.receiverid);
+  let sql1 = `SELECT * FROM inbox WHERE (sender_guid = ${senderGuid} and receiver_guid = ${receiverGuid}) OR (sender_guid = ${receiverGuid} and receiver_guid = ${senderGuid}) ORDER BY date_created ASC`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
 
 // get feedback
 

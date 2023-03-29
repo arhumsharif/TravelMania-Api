@@ -511,4 +511,137 @@ router.post('/feedback/add', checkAuth, (req, res) => {
   });
 });
 
+
+
+// payment route
+
+router.post("/user/payment", async (req, res) => {
+  var paymentGuid = db.escape(uuidv4())
+  var userGuid = db.escape(req.body.UserGuid)
+  var packageGuid = db.escape(req.body.PackageGuid)
+  var price = req.body.Price
+  var email = req.body.Email
+  var m_email = req.body.Email
+
+  var c_expiryMonth = req.body.ExpiryMonth;
+  var c_expiryYear = req.body.ExpiryYear;
+  var c_cvc = req.body.CVC;
+  var c_card = req.body.Card;
+  var expiryDate = c_expiryMonth + "/" + c_expiryYear;
+
+  var Publishable_Key =
+    "pk_test_51LyJTRHHR869bYiRJ50wMehT63wHEFc4uCLal5Rx2hXwk4W3IXv9XG2AoSnwdf1SkUida8Z8U5QP7HQ9rHQ3gjqy00Y99eU9y7";
+  var Secret_Key =
+    "sk_test_51LyJTRHHR869bYiRhw0Ex578avVbQ9Z4No6sgGrpZYUhO0mS6zjvRQpZRMY88Jx8UR8NyuXSbP35U3fl0PQcRpga00JDY2D0kw";
+
+  const stripe = require("stripe")(Secret_Key);
+
+  try {
+    const customer = await stripe.customers.create({
+      description: email,
+    });
+
+    if (customer == "" || customer == null) {
+      return res.status(500).json({
+        message: "Error Occured in Stripe Customer",
+      });
+    }
+
+    const card_Token = await stripe.tokens.create({
+      card: {
+        number: c_card.replace(/\s/g, ""),
+        exp_month: Number(c_expiryMonth),
+        exp_year: Number(c_expiryYear),
+        cvc: c_cvc,
+      },
+    });
+
+    if (card_Token == "" || card_Token == null) {
+      return res.status(500).json({
+        message: "Error Occured in Stripe CardToken",
+      });
+    }
+    const card = await stripe.customers.createSource(customer.id, {
+      source: card_Token.id,
+    });
+
+    console.log(card);
+
+    var amount = 0;
+    amount = Number(price)
+      const createCharge = await stripe.charges.create({
+        receipt_email: email,
+        amount: amount * 100, //USD*100
+        currency: "USD",
+        card: card.id,
+        customer: customer.id,
+      });
+      console.log(createCharge.id);
+      if (createCharge == "" || createCharge == null) {
+        return res.status(500).json({
+          message: "Error Occured in Stripe Charges",
+        });
+      }
+      
+      if (createCharge.status == "succeeded") {
+          // Here we will add an entry to payment
+          let user_add = `INSERT INTO payment (payment_guid, user_guid, package_guid, price) VALUES (${paymentGuid}, ${userGuid}, ${packageGuid}, ${price})`;
+          let user_add_query = db.query(
+            user_add,
+            (user_add_err, user_add_result) => {
+              if (user_add_err) {
+                console.log(user_add_err);
+                return res.status(500).json({
+                  message: "Error Occured in Inserting Data",
+                });
+              }
+            }
+          );
+          // Sending Mail to user
+          let mail_body =
+            "Dear Customer, \n\n You have successfully made a payment. \n\n Your Receipt Url is: " +
+            createCharge.receipt_url +
+            " \n Your Refund Url is: " +
+            createCharge.refunds.url;
+          sendConfirmation(m_email, "Confirmation of Email from Travelmania", mail_body);
+          return res.status(200).json({
+            message: "Payment Successful!",
+          });
+        } else {
+          console.log(err);
+          return res.status(500).json({
+            message: "Stripe Payment Failed!",
+          });
+        }
+      console.log("----------------------------");
+  }
+  catch (err) {
+    console.log(err)
+    return res.status(500).json({
+      message: 'Payment Failed',
+    });
+  }
+})
+
+
+router.post('/chat/add', checkAuth, (req, res) => {
+  let inboxGuid = db.escape(uuidv4());
+  let senderGuid = db.escape(req.userData.user_guid);
+  let receiverGuid = db.escape(req.body.ReceiverGuid);
+  let message = db.escape(req.body.Message);
+
+  let sql1 = `INSERT INTO inbox (inbox_guid, sender_guid, receiver_guid, message) VALUES (${inboxGuid}, ${senderGuid}, ${receiverGuid}, ${message})`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+    });
+  });
+});
+
 module.exports = router;
