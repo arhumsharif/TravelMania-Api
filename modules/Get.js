@@ -83,6 +83,23 @@ router.get('/package/specific/view/:package_id', (req, res) => {
   });
 });
 
+router.get('/package/desc/:package_id', (req, res) => {
+  let packageGuid = db.escape(req.params.package_id);
+  let sql1 = `SELECT * FROM package_description WHERE package_guid = ${packageGuid} ORDER BY day ASC`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
+
 // Tour Organization
 
 router.get('/tourorg/portfolio/view', checkAuth, (req, res) => {
@@ -225,6 +242,5 @@ router.get('/feedback/view/:tourguideid', (req, res) => {
     });
   });
 });
-
 
 module.exports = router;
