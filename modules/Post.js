@@ -596,7 +596,7 @@ router.post("/user/payment", async (req, res) => {
       const createCharge = await stripe.charges.create({
         receipt_email: email,
         amount: amount * 100, //USD*100
-        currency: "USD",
+        currency: "PKR",
         card: card.id,
         customer: customer.id,
       });
