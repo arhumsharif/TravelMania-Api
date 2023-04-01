@@ -285,4 +285,23 @@ router.get('/feedback/view/:tourguideid', (req, res) => {
   });
 });
 
+
+router.get('/chats',checkAuth , (req, res) => {
+  let userGuid = db.escape(req.userData.user_guid);
+
+  let sql1 = `SELECT user_guid, email, user_type FROM users WHERE user_guid != ${userGuid};`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
+
 module.exports = router;
