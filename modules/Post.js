@@ -539,9 +539,9 @@ router.post('/feedback/add', checkAuth, (req, res) => {
 
 // payment route
 
-router.post("/user/payment", async (req, res) => {
+router.post("/user/payment",checkAuth, async (req, res) => {
   var paymentGuid = db.escape(uuidv4())
-  var userGuid = db.escape(req.body.UserGuid)
+  var userGuid = db.escape(req.userData.user_guid)
   var packageGuid = db.escape(req.body.PackageGuid)
   var price = req.body.Price
   var email = req.body.Email
