@@ -227,19 +227,42 @@ router.get('/helpportal/view/all', (req, res) => {
 router.get('/chat/view/:receiverid', checkAuth, (req, res) => {
   let senderGuid = db.escape(req.userData.user_guid);
   let receiverGuid = db.escape(req.params.receiverid);
-  let sql1 = `SELECT * FROM inbox WHERE (sender_guid = ${senderGuid} and receiver_guid = ${receiverGuid}) OR (sender_guid = ${receiverGuid} and receiver_guid = ${senderGuid}) ORDER BY date_created ASC`;
-  let query1 = db.query(sql1, (err, result) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).json({
-        message: 'Some Error Occured in Checking',
-      });
-    }
-    return res.status(200).json({
-      message: 'Success',
-      data: result,
-    });
+  let promise = new Promise((resolve, reject) => {
+
+    let sql1 = `SELECT * FROM inbox WHERE (sender_guid = ${senderGuid} and receiver_guid = ${receiverGuid}) OR (sender_guid = ${receiverGuid} and receiver_guid = ${senderGuid}) ORDER BY date_created ASC`;
+    let query1 = db.query(sql1, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          message: 'Some Error Occured in Checking',
+        });
+      }
+      resolve(result)
+    })
+
   });
+  promise.then((data) => {
+    
+    let sql2 = `SELECT email from users WHERE user_guid = ${receiverGuid}`;
+    let query2 = db.query(sql2, (err1, result1) => {
+      if (err1) {
+        console.log(err1);
+        return res.status(500).json({
+          message: 'Some Error Occured in Getting email',
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Success',
+        moreData: result1,
+        data: data,
+      });
+    })
+  }, (err) => {
+    return res.status(500).json({
+      message: 'Some Error Occured in Checking',
+    });
+  })
 });
 
 // get feedback
