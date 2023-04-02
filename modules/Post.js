@@ -423,7 +423,7 @@ router.post('/traveler/portfolio/add', checkAuth, (req, res) => {
     },
     (data) => {
       // Gonna Update
-      let sql2 = `UPDATE traveler SET name = ${name}, phone = ${phone}, cnic = ${cnic}, language = ${language}, dob = ${dob}, gender = ${gender}, city = ${city}, country = ${country}, about = ${about} WHERE user_guid = ${userGuid}`;
+      let sql2 = `UPDATE traveler SET name = ${name}, phone = ${phone}, cnic = ${cnic}, language = ${language}, gender = ${gender}, city = ${city}, country = ${country}, about = ${about} WHERE user_guid = ${userGuid}`;
       let query2 = db.query(sql2, (err1, result1) => {
         if (err1) {
           console.log(err1);
