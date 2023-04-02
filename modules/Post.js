@@ -450,8 +450,9 @@ router.post('/package/add', checkAuth, (req, res) => {
   let hotel = db.escape(req.body.Hotel);
   let price = db.escape(req.body.Price);
   let capacity = db.escape(req.body.Capacity);
+  let image_url = db.escape(req.body.ImageURL);
 
-  let sql1 = `INSERT INTO package (package_guid, user_guid, title, description, place, hotel, price, capacity) VALUES (${packageGuid}, ${userGuid}, ${title}, ${desc}, ${place}, ${hotel}, ${price}, ${capacity})`;
+  let sql1 = `INSERT INTO package (package_guid, user_guid, title, description, place, hotel, price, image_url, capacity) VALUES (${packageGuid}, ${userGuid}, ${title}, ${desc}, ${place}, ${hotel}, ${price}, ${image_url}, ${capacity})`;
   let query1 = db.query(sql1, (err, result) => {
     if (err) {
       console.log(err);
