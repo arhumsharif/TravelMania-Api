@@ -468,27 +468,7 @@ router.post('/package/add', checkAuth, (req, res) => {
 });
 
 // Package description add
-router.post('/package/desc/add', (req, res) => {
-  console.log('ksjda');
-  let packageDescGuid = db.escape(uuidv4());
-  let packageGuid = db.escape(req.body.Guid);
-  let time = db.escape(req.body.Time);
-  let event = db.escape(req.body.Event);
-  let day = db.escape(req.body.Day);
 
-  let sql1 = `INSERT INTO package_description (package_desc_guid, package_guid, time, event, day) VALUES (${packageDescGuid}, ${packageGuid}, ${time}, ${event}, ${day})`;
-  let query1 = db.query(sql1, (err, result) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).json({
-        message: 'Some Error Occured in Checking',
-      });
-    }
-    return res.status(200).json({
-      message: 'Success',
-    });
-  });
-});
 
 // add  portal
 
