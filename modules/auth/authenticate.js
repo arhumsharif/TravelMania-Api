@@ -20,6 +20,7 @@ function getSecretKey() {
 router.post('/', async (req, res) => {
   let email = db.escape(req.body.Email);
   let password = db.escape(md5(req.body.Password));
+  console.log(password);
   let sql = `SELECT * FROM users where email = ${email} AND password = ${password}`;
   let quedminry = db.query(sql, (err, result) => {
     if (err) {
