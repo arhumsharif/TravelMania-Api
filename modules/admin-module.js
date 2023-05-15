@@ -41,7 +41,7 @@ const sendConfirmation = (receiver, subject, text) => {
 // @desc   Admin to get the request for the new tour guides
 // @access restricted
 // @method GET
-router.get('/get/req/tourguide', (req, res) => {
+router.get('/get/req/tourguide', checkAuth, (req, res) => {
   let query = `SELECT * FROM req_tour_guide WHERE confirmed = 0`;
   let queryRes = db.query(query, (err, result) => {
     if (err) {
@@ -61,7 +61,7 @@ router.get('/get/req/tourguide', (req, res) => {
 // @desc   Admin to get the request for the new tour guides
 // @access restricted
 // @method GET
-router.get('/get/req/tourorg', (req, res) => {
+router.get('/get/req/tourorg', checkAuth, (req, res) => {
   let query = `SELECT * FROM req_tour_org WHERE confirmed = 0`;
   let queryRes = db.query(query, (err, result) => {
     if (err) {
@@ -81,7 +81,7 @@ router.get('/get/req/tourorg', (req, res) => {
 // @desc   Admin to get the request for a specific new tour guides
 // @access restricted
 // @method GET
-router.get('/get/req/tourguide/:id', (req, res) => {
+router.get('/get/req/tourguide/:id', checkAuth, (req, res) => {
   let id = db.escape(req.params.id);
   let query = `SELECT * FROM req_tour_guide WHERE req_guid = ${id} AND confirmed = 0`;
   let queryRes = db.query(query, (err, result) => {
@@ -102,7 +102,7 @@ router.get('/get/req/tourguide/:id', (req, res) => {
 // @desc   Admin to get the request for a specific new tour guides
 // @access restricted
 // @method GET
-router.get('/get/req/tourorg/:id', (req, res) => {
+router.get('/get/req/tourorg/:id', checkAuth, (req, res) => {
   let id = db.escape(req.params.id);
   let query = `SELECT * FROM req_tour_org WHERE req_guid = ${id} AND confirmed = 0`;
   let queryRes = db.query(query, (err, result) => {
@@ -123,11 +123,11 @@ router.get('/get/req/tourorg/:id', (req, res) => {
 // @desc   Admin to get the request for a specific new tour guides
 // @access restricted
 // @method GET
-router.post('/post/success', (req, res) => {
+router.post('/post/success', checkAuth, (req, res) => {
   let user_guid = db.escape(req.body.req_guid);
   let email = db.escape(req.body.email);
   let password = db.escape(req.body.password);
-  let table = db.escape(req.body.table);
+  let table = req.body.table;
   let userType = db.escape(req.body.user_type);
   let sql = `INSERT INTO users (user_guid, email, password, user_type, secret_key) VALUES(${user_guid}, ${email}, ${password}, ${userType}, '')`;
   let query = db.query(sql, (err, result) => {
@@ -138,7 +138,8 @@ router.post('/post/success', (req, res) => {
       });
     }
 
-    let sql2 = `DELETE FROM ${table} where req_guid = ${user_guid}`;
+    let sql2 = `DELETE FROM ${table} WHERE req_guid = ${user_guid}`;
+    console.log(sql2);
     let query2 = db.query(sql2, (err2, result2) => {
       if (err2) {
         console.log(err2);
@@ -164,10 +165,10 @@ router.post('/post/success', (req, res) => {
 // @desc   Admin to get the request for a specific new tour guides
 // @access restricted
 // @method GET
-router.post('/post/failure', (req, res) => {
+router.post('/post/failure', checkAuth, (req, res) => {
   let user_guid = db.escape(req.body.req_guid);
   let email = req.body.email;
-  let table = db.escape(req.body.table);
+  let table = req.body.table;
   let sql = `DELETE FROM ${table} WHERE req_guid = ${user_guid}`;
   let query = db.query(sql, (err, result) => {
     if (err) {
