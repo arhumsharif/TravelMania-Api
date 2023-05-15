@@ -537,6 +537,94 @@ router.post('/feedback/add', checkAuth, (req, res) => {
   });
 });
 
+
+router.post('/password/change', checkAuth, (req, res) => {
+  let userGuid = db.escape(req.userData.user_guid);
+  let oldPass = db.escape(md5(req.body.OldPass));
+  let newPass = db.escape(md5(req.body.NewPass));
+
+  let promise = new Promise((resolve, reject) => {
+    let sql1 = `SELECT * FROM users WHERE user_guid = ${userGuid} and password = ${oldPass}`;
+    let query1 = db.query(sql1, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          message: 'Some Error Occured in Checking',
+        });
+      }
+
+      if (result.length > 0)
+      {
+        resolve(result)
+      }
+      else
+      {
+        return res.status(500).json({
+          message: 'Password not correct',
+        });
+      }
+    });  
+  })
+  promise.then(
+    (data) => {
+        let sql1 = `UPDATE users SET password = ${newPass} WHERE password = ${oldPass} and user_guid = ${userGuid}`;
+        let query1 = db.query(sql1, (err, result) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              message: 'Some Error Occured in Checking',
+            });
+          }
+          return res.status(200).json({
+            message: 'Success',
+          });
+        });
+    }
+  )
+
+});
+
+
+// booking route
+router.post('/booking', checkAuth, (req, res) => {
+  let bookingGuid = db.escape(uuidv4());
+  var userGuid = db.escape(req.userData.user_guid);
+  let packageGuid = db.escape(req.body.PackageGuid);
+  let bookingDate = db.escape(req.body.BookingDate)
+
+  let sql1 = `INSERT INTO booking (booking_guid, traveler_guid, package_guid, booking_date) VALUES (${bookingGuid}, ${userGuid}, ${packageGuid}, ${bookingDate})`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+    });
+  });
+});
+
+
+router.post('/package/available', checkAuth, (req, res) => {
+  let packageGuid = db.escape(req.body.PackageGuid);
+  let availability = db.escape(req.body.Availability)
+
+  let sql1 = `UPDATE package SET is_available = ${availability} WHERE package_guid = ${packageGuid}`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+    });
+  });
+});
+
 // payment route
 
 router.post('/user/payment', checkAuth, async (req, res) => {

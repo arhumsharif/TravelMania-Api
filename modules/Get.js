@@ -267,10 +267,10 @@ router.get('/chat/view/:receiverid', checkAuth, (req, res) => {
 
 // get feedback
 
-router.get('/feedback/view/:tourguideid', (req, res) => {
-  let tourGuideGuid = db.escape(req.params.tourguideid);
+router.get('/feedback/view/:packageid', (req, res) => {
+  let entityGuid = db.escape(req.params.packageid);
 
-  let sql1 = `SELECT f.* , u.email from feedback f INNER JOIN users u ON f.user_guid = u.user_guid WHERE f.tour_guide_guid = ${tourGuideGuid};`;
+  let sql1 = `SELECT f.* , u.email from feedback f INNER JOIN users u ON f.user_guid = u.user_guid WHERE f.entity_guid = ${entityGuid};`;
   let query1 = db.query(sql1, (err, result) => {
     if (err) {
       console.log(err);
