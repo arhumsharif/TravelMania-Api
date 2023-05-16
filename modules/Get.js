@@ -142,7 +142,7 @@ router.get('/traveler/portfolio/view', checkAuth, (req, res) => {
 
 router.get('/package/view', checkAuth, (req, res) => {
   let userGuid = db.escape(req.userData.user_guid);
-  let sql1 = `SELECT * FROM package WHERE user_guid = ${userGuid}`;
+  let sql1 = `SELECT p.*, AVG(f.rating) as 'Rating', COUNT(f.rating) as 'Number' FROM package p LEFT JOIN feedback f ON p.package_guid = f.entity_guid GROUP BY p.package_guid HAVING p.user_guid = ${userGuid}`;
   let query1 = db.query(sql1, (err, result) => {
     if (err) {
       console.log(err);
@@ -158,7 +158,7 @@ router.get('/package/view', checkAuth, (req, res) => {
 });
 
 router.get('/package/view/all', (req, res) => {
-  let sql1 = `SELECT * FROM package`;
+  let sql1 = `SELECT p.*, AVG(f.rating) as 'Rating', COUNT(f.rating) as 'Number' FROM package p LEFT JOIN feedback f ON p.package_guid = f.entity_guid GROUP BY p.package_guid;`;
   let query1 = db.query(sql1, (err, result) => {
     if (err) {
       console.log(err);
@@ -222,6 +222,43 @@ router.get('/helpportal/view/all', (req, res) => {
     });
   });
 });
+
+
+router.get('/traveler/profile/view', checkAuth, (req, res) => {
+  let userGuid = db.escape(req.userData.user_guid)
+  let sql1 = `SELECT p.*, b.booking_date FROM booking b INNER JOIN package p ON p.package_guid = b.package_guid WHERE b.traveler_guid = ${userGuid};`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
+
+
+router.get('/organizer/profile/view', checkAuth, (req, res) => {
+  let userGuid = db.escape(req.userData.user_guid)
+  let sql1 = `SELECT p.*, b.booking_date, b.traveler_guid, u.email from booking b INNER JOIN package p ON b.package_guid = p.package_guid INNER JOIN users u ON b.traveler_guid = u.user_guid WHERE p.user_guid = ${userGuid};`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
+
 // chat view
 
 router.get('/chat/view/:receiverid', checkAuth, (req, res) => {
