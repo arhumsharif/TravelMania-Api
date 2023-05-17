@@ -57,6 +57,26 @@ router.get('/get/req/tourguide', checkAuth, (req, res) => {
   });
 });
 
+// @route  /admin/get/help/queries
+// @desc   Admin to get the help queries
+// @access restricted
+// @method GET
+router.get('/get/help/queries', checkAuth, (req, res) => {
+  let query = `SELECT * FROM help_portal ORDER BY date_created DESc`;
+  let queryRes = db.query(query, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Server Error',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  });
+});
+
 // @route  /admin/get/req/tourorg
 // @desc   Admin to get the request for the new tour guides
 // @access restricted
