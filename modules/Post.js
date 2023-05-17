@@ -607,6 +607,26 @@ router.post('/booking', checkAuth, (req, res) => {
 });
 
 
+router.post('/booking/cancel', checkAuth, (req, res) => {
+  let bookingGuid = db.escape(req.body.BookingGuid);
+
+  let sql1 = `DELETE FROM booking WHERE booking_guid = ${bookingGuid}`;
+  let query1 = db.query(sql1, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: 'Some Error Occured in Checking',
+      });
+    }
+    return res.status(200).json({
+      message: 'Success',
+    });
+  });
+});
+
+
+
+
 router.post('/package/available', checkAuth, (req, res) => {
   let packageGuid = db.escape(req.body.PackageGuid);
   let availability = db.escape(req.body.Availability)

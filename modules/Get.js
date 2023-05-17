@@ -244,7 +244,7 @@ router.get('/traveler/profile/view', checkAuth, (req, res) => {
 
 router.get('/organizer/profile/view', checkAuth, (req, res) => {
   let userGuid = db.escape(req.userData.user_guid)
-  let sql1 = `SELECT p.*, b.booking_date, b.traveler_guid, u.email from booking b INNER JOIN package p ON b.package_guid = p.package_guid INNER JOIN users u ON b.traveler_guid = u.user_guid WHERE p.user_guid = ${userGuid};`;
+  let sql1 = `SELECT p.*, b.booking_date, b.traveler_guid, b.booking_guid, u.email from booking b INNER JOIN package p ON b.package_guid = p.package_guid INNER JOIN users u ON b.traveler_guid = u.user_guid WHERE p.user_guid = ${userGuid};`;
   let query1 = db.query(sql1, (err, result) => {
     if (err) {
       console.log(err);
